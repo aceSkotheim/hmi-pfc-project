@@ -1,0 +1,8 @@
+DB_NAME=my_pfc_project_db
+DB_USER=my_pfc_project_user
+DB_PASS=882934lisbon
+DB_SERVICE=postgres
+DB_PORT=5432
+SECRET_KEY=dt041mr8)th08o&x1=-h$3*)yi+y=$rqv6qd734&^v*nqc9_2$
+domains=hmiplant.ddns.net
+PGDATA=/var/lib/postgresql/data

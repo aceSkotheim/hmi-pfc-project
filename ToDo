@@ -1,0 +1,15 @@
+- Get a backup working - Maybe git? - Get it into a cronjob
+- User/Group model that captures data from google login - defines people by login to allow access to data or access to pages
+- Specifications for each section of the site - Orders, Inventory, Production, Complaints, Files
+- Get 'attachements' working so can upload files to a database record
+- Get Channels working so that data can be passed back and forth via websockets
+- Get an ability to send notifications to other users or their devices
+- Get a JsonEditor working for checklists
+- Models checked and data transfer initiated
+
+DONE
+- remove vue_old directory - DONE BS - 2019-11-02
+- Google login/credentials working -- https://www.npmjs.com/package/vue-google-login -> client secret: jYk4i68kSSnDQd43iD7fUmqu
+- Install axios for REST Framework
+- Fundamental layout of site -> components /core /base /scoped *** 
+- Understand Vuex and see if there is an application here, or do we just use Redis off the Django backend?

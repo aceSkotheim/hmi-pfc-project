@@ -1,0 +1,110 @@
+#PlanA docker-compose file
+web:
+  restart: always
+  build: ./web/
+  expose:
+    - "8000"
+  environment:
+    - PYTHONUNBUFFERED=0
+  links:
+    - postgres:postgres
+    - redis:redis
+  env_file: env
+  volumes:
+    - ./web:/data/web
+  working_dir: '/data/web/pfc_api'
+  command: daphne -b 0.0.0.0 -p 8000 pfc_api.asgi:application -v 2
+#  command: gunicorn pfc_api.wsgi -b 0.0.0.0:8000
+
+pgadmin:
+  # pgAdmin4 to administer the website - available at hmidb.ddns.net
+  restart: always
+  image: chorss/docker-pgadmin4:latest
+  env_file:
+    - env
+  expose:
+    - "5050"
+  volumes:
+    - ./postgres/pgadmin:/data
+  links:
+    - postgres:postgres
+
+vue:
+  restart: always
+  build: ./vue/
+  ports:
+    - "8080:8080"
+  volumes:
+    - ./vue/app:/vue/app
+  working_dir: '/vue/app'
+  links:
+    - web:web
+  command: ["npm", "run", "serve"]
+
+vscode:
+  restart: always
+  image: codercom/code-server:v2
+  expose:
+    - "8443"
+  volumes:
+    - ./vscode/:/root
+    - ./:/root/project
+  command: code-server --port 8443
+
+nginx:
+  restart: always
+  build: ./nginx/
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./nginx/public:/usr/share/nginx/html
+    - ./nginx/htpasswd:/etc/nginx/htpasswd
+    - ./nginx/sites-enabled:/etc/ngnix/conf.d
+    # Let's Encrypt requirement
+    - ./nginx/data/certbot/conf:/etc/letsencrypt
+    - ./nginx/data/certbot/www:/usr/share/nginx/html/certbot
+  links:
+    - web:web
+    - vue:vue
+    - vscode:vscode
+    - pgadmin:pgadmin
+
+certbot:
+  image: certbot/certbot
+  volumes:
+    - ./nginx/data/certbot/conf:/etc/letsencrypt
+    - ./nginx/data/certbot/www:/usr/share/nginx/html/certbot
+
+postgres:
+  restart: always
+  image: postgres:latest
+  volumes:
+    - ./postgres/postgres-data:/var/lib/postgresql/data
+    - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    - ./backups/postgresql:/backup
+  env_file:
+    - env
+  expose:
+    - "5432"
+
+redis:
+  restart: always
+  image: redislabs/rejson:latest
+  expose:
+    - "6379"
+
+##data:
+##  restart: always
+##  image: alpine
+##  volumes:
+##    - /var/lib/postgresql
+##  command: "true"
+
+##media:
+##  restart: always
+##  image: alpine
+##  volumes:
+##    - /var/media/uploads/
+##  command: "true"
+
